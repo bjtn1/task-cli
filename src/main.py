@@ -8,53 +8,30 @@ import argparse
 import json
 import os
 from datetime import datetime
-"""
-should I check if the file exists in every single function?
-Perhaps we should check if it exists before calling any function
-that would increase speed methinks
 
 
-2) I dont think creating a global variable for the dictionary is a good idea.
-I am going to add a dictionary as a paremeter to every function
-
-better yet, i should be able to open the file inside each function and
-scratch that, we should think about how we're going to represent each task
-a task will be made up of:
-- an id
-- a name
-- a status
-
-its going to look like this
-
-
-
-what a task will look like
-{
-    "id": {
-        "description": "",
-        "status": "",
-        "createdAt": "",
-        "updatedAt": "",
-    },
-}
-"""
-
-
-def add(task_description):
+def get_tasks(json_path):
     # we do a try...except because if tasks.json is empty,
     # we must create an empty json object
     # otherwise we'll get a JSONDecodeError
     try:
         # turning json files into dicts works like this:
-        with open("./tasks.json", "r") as json_file:
+        with open(json_path, "r") as json_file:
             tasks_dict = json.load(json_file)
     except (json.JSONDecodeError, FileNotFoundError):
         # create an empty json file if tasks.json is initially empty
         tasks_dict = {}
 
         # we create the file if it doesn't already exist
-        with open("./tasks.json", "w") as json_file:
+        with open(json_path, "w") as json_file:
             json.dump(tasks_dict, json_file)
+
+    return tasks_dict
+
+
+
+def add(task_description):
+    tasks_dict = get_tasks("./tasks.json")
 
     # count the total tasks in the json file
     total_tasks = len(tasks_dict)
@@ -95,6 +72,10 @@ def delete(task):
     pass
 
 def list_tasks(status):
+    # TODO
+    # 1) open json file and turn it into a dict
+    try
+    with open("./tasks.json", "r") as json_file:
     pass
 
 
