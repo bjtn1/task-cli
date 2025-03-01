@@ -29,6 +29,14 @@ def get_tasks(json_path):
     return tasks_dict
 
 
+def print_tasks(tasks_dict):
+    print(
+    f"Description: {tasks_dict["description"]}\n"
+    f"Status: {tasks_dict["status"]}\n"
+    f"Created at: {tasks_dict["createdAt"]}\n"
+    f"Updated at: {tasks_dict["updatedAt"]}\n"
+    )
+
 
 def add(task_description):
     tasks_dict = get_tasks("./tasks.json")
@@ -71,12 +79,18 @@ def delete(task):
     print(f"deleting {task}")
     pass
 
+
 def list_tasks(status):
-    # TODO
-    # 1) open json file and turn it into a dict
-    try
-    with open("./tasks.json", "r") as json_file:
-    pass
+    # open json file and turn it into a dict
+    tasks_dict = get_tasks("./tasks.json")
+
+    # iterate over the values of dict to look at each task's description
+    # and be able to access the `status` field
+    for task_id, task_info in tasks_dict.items():
+        if task_info["status"] == status:
+            print(f"ID: {task_id}")
+            print_tasks(task_info)
+
 
 
 def main():
@@ -92,46 +106,46 @@ def main():
     group.add_argument(
         "-a",
         "--add",
+        help="Add a new task",
     )
 
     group.add_argument(
         "-u",
         "--update",
         nargs=2,
+        metavar=("TASK_ID", "NEW_STATUS"),
+        help="Update the status of a task",
     )
 
     group.add_argument(
         "-d",
         "--delete",
+        metavar="TASK_ID",
+        help="Delete a taks by ID",
     )
 
     group.add_argument(
         "-l",
         "--list",
+        metavar="STATUS",
+        help="List all tasks by STATUS",
     )
 
     args = parser.parse_args()
 
-    add_task = args.add
-    update_task = args.update
-    task_id = args.delete
-    list_tasks = args.list
+    task_to_add = args.add
+    task_to_update = args.update
+    task_to_delete = args.delete
+    status_filter = args.list
 
-    # TODO
-    # check that tasks.json exists before calling any function
-    # if it doesn't exist, create the file
-    if not os.path.exists("./tasks.json"):
-        tasks_file = open("./tasks.json", "w")
-        tasks_file.close()
-
-    if add_task:
-        add(add_task)
-    elif update_task:
-        update_task(update_task)
-    elif task_id:
-        delete(task_id)
-    elif list_tasks:
-        list_tasks()
+    if task_to_add:
+        add(task_to_add)
+    elif task_to_update:
+        task_to_update(task_to_update)
+    elif task_to_delete:
+        delete(task_to_delete)
+    elif status_filter:
+        list_tasks(status_filter)
 
 
 
