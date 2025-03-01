@@ -6,7 +6,7 @@
 
 import argparse
 import json
-import os
+import uuid
 from datetime import datetime
 
 
@@ -17,6 +17,7 @@ def get_tasks(json_path):
     try:
         # turning json files into dicts works like this:
         with open(json_path, "r") as json_file:
+            # this gives you a dict of the tasks in the json file
             tasks_dict = json.load(json_file)
     except (json.JSONDecodeError, FileNotFoundError):
         # create an empty json file if tasks.json is initially empty
@@ -39,15 +40,23 @@ def print_tasks(tasks_dict):
 
 
 def add(task_description):
+    # get the current tasks as a dict
     tasks_dict = get_tasks("./tasks.json")
 
     # count the total tasks in the json file
     total_tasks = len(tasks_dict)
 
     # create the unique id
-    id = total_tasks + 1
+    # to avoid problems with delete and overwriting existing entries
+    # we have to find the max id in the dict, and increment that
+    # this turns all the keys into an integer and finds the max ID
+    # max_id we'll be 0 if tasks_dict is empty
+    max_id = max(map(int, tasks_dict.keys())) if tasks_dict else 0
 
-    # format date in 2025-01-31 13:59:59 format
+    # we turn it into a string and add it as the id
+    task_id = str(max_id + 1)
+
+    # format the date in 2025-01-31 13:59:59 format
     date = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
 
     # create the task that will be added to the json
@@ -60,14 +69,14 @@ def add(task_description):
     }
 
     # add new task to the dict
-    tasks_dict[id] = new_task
+    tasks_dict[task_id] = new_task
     
     # add the new task back to the file
     with open("./tasks.json", "w") as json_file:
         # convert the file back to a json file
         json.dump(tasks_dict, json_file, indent=4)
 
-    print(f"Successfully added \"{task_description}\" (ID: {id})")
+    print(f"Successfully added \"{task_description}\" (ID: {task_id})")
 
 
 def update(task_id):
@@ -75,9 +84,16 @@ def update(task_id):
     pass
 
 
-def delete(task):
-    print(f"deleting {task}")
-    pass
+def delete(task_id):
+    tasks_dict = get_tasks("./tasks.json")
+
+    task_id = str(task_id)
+
+    # makde sure key exists bfore deleting it
+    if task_id in tasks_dict:
+        del tasks_dict[task_id]
+        with open("./tasks.json", "w") as json_file:
+            json.dump(tasks_dict, json_file, indent=4)
 
 
 def list_tasks(status: str):
