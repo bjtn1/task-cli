@@ -80,17 +80,20 @@ def delete(task):
     pass
 
 
-def list_tasks(status):
+def list_tasks(status: str):
+    # set the whole status to lower case just to be safe
+    if status is not None:
+        status = status.lower()
+
     # open json file and turn it into a dict
     tasks_dict = get_tasks("./tasks.json")
 
     # iterate over the values of dict to look at each task's description
     # and be able to access the `status` field
     for task_id, task_info in tasks_dict.items():
-        if task_info["status"] == status:
+        if status is None or task_info["status"] == status:
             print(f"ID: {task_id}")
             print_tasks(task_info)
-
 
 
 def main():
@@ -127,25 +130,22 @@ def main():
     group.add_argument(
         "-l",
         "--list",
+        nargs="?",
+        const=None,
         metavar="STATUS",
-        help="List all tasks by STATUS",
+        help="List all tasks by STATUS (prints all tasks if no STATUS is given)",
     )
 
     args = parser.parse_args()
 
-    task_to_add = args.add
-    task_to_update = args.update
-    task_to_delete = args.delete
-    status_filter = args.list
-
-    if task_to_add:
-        add(task_to_add)
-    elif task_to_update:
-        task_to_update(task_to_update)
-    elif task_to_delete:
-        delete(task_to_delete)
-    elif status_filter:
-        list_tasks(status_filter)
+    if args.add:
+        add(args.add)
+    elif args.update:
+        update(*args.update)
+    elif args.delete:
+        delete(args.delete)
+    elif args.list or args.list is None:
+        list_tasks(args.list)
 
 
 
