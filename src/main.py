@@ -54,7 +54,7 @@ def add(task_description):
 
         # we create the file if it doesn't already exist
         with open("./tasks.json", "w") as json_file:
-            tasks_dict = json.load(json_file)
+            json.dump(tasks_dict, json_file)
 
     # count the total tasks in the json file
     total_tasks = len(tasks_dict)
