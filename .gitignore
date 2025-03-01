@@ -1,5 +1,6 @@
 # Created by https://www.toptal.com/developers/gitignore/api/macos,python,venv
 # Edit at https://www.toptal.com/developers/gitignore?templates=macos,python,venv
+tasks.json
 
 ### macOS ###
 # General
