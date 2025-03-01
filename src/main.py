@@ -49,8 +49,12 @@ def add(task_description):
         with open("./tasks.json", "r") as json_file:
             tasks_dict = json.load(json_file)
     except (json.JSONDecodeError, FileNotFoundError):
-        # this should only happen if tasks.json is completely empty
+        # create an empty json file if tasks.json is initially empty
         tasks_dict = {}
+
+        # we create the file if it doesn't already exist
+        with open("./tasks.json", "w") as json_file:
+            tasks_dict = json.load(json_file)
 
     # count the total tasks in the json file
     total_tasks = len(tasks_dict)
