@@ -159,8 +159,12 @@ def list_tasks(status: str) -> None:
             print_task(task_info)
 
 
-def mark(task_id: int) -> None:
+def mark(task_id: int, new_status: str) -> None:
     # TODO
+    tasks_dict: dict[int, dict[str, str]] = get_tasks(".tasks.json")
+
+    task_to_be_changed: dict[str, str] = tasks_dict[task_id]
+
     pass
 
 
@@ -183,6 +187,14 @@ def main():
     group.add_argument(
         "-u",
         "--update",
+        nargs=2,
+        metavar=("TASK_ID", "NEW_DESCRIPTION"),
+        help="Update the description of a task",
+    )
+
+    group.add_argument(
+        "-m",
+        "--mark",
         nargs=2,
         metavar=("TASK_ID", "NEW_STATUS"),
         help="Update the status of a task",
@@ -220,6 +232,17 @@ def main():
             # task_id will be a str since we got it from the command line
             # so we turn it into an int here iff it's safe
             update(int(task_id), new_task_description)
+    elif args.mark:
+        task_id: str = args.mark[0]
+        new_status: str = args.mark[1]
+
+        # if the task_id is not a digit, we cannot convert it to an int, so we throw an exception
+        if not task_id.isdigit():
+            raise ValueError(f"Expected an integer, but got {type(task_id)} instead.")
+        else:
+            # task_id will be a str since we got it from the command line
+            # so we turn it into an int here iff it's safe
+            mark(int(task_id), new_status)
     elif args.delete:
         delete(args.delete)
     elif args.list or args.list is None:
