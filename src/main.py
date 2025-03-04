@@ -1,10 +1,18 @@
+"""
+@author: Brandon Jose Tenorio Noguera
+@email: task_cli@bjtn.me
+@website: https://bjtn.me
+@github: https://github.com/bjtn1
+
+A command line program to create and keep track of your tasks.
+"""
+
 import argparse
 import json
 from datetime import datetime
 
 
 def get_tasks(json_path: str) -> dict[int, dict[str, str]]:
-    # TEST
     """
     Returns a dictionary that represents a list of tasks.
     Creates `tasks.json` in the current directory if it doesn't already exist
@@ -35,7 +43,6 @@ def get_tasks(json_path: str) -> dict[int, dict[str, str]]:
 
 
 def print_task(task_dict: dict[str, str]) -> None:
-    # TEST
     """
     Prints a dictionary that represents a sigular task in the following form:
     Description: DESCRIPTION
@@ -53,7 +60,6 @@ def print_task(task_dict: dict[str, str]) -> None:
 
 
 def add(task_description: str) -> None:
-    # TEST
     """
     Adds "task_description" to `tasks.json` with the default status of "todo"
     Creates `tasks.json` if the file doesn't exist.
@@ -97,17 +103,13 @@ def add(task_description: str) -> None:
 
 
 def update(task_id: int, new_task_description: str) -> None:
-    # TEST
     """
     Updates an existing task in the file `tasks.json` by changing its description
+    Raises KeyError exception if `task_id` isn't found in `tasks.json`
 
     task_id -- an int representing an existing task in `tasks.json`
     new_task_description -- a str representing the new task description
     """
-
-    # TODO
-    # what if the user inputs a task_id that doesn't exist?
-
     tasks_dict: dict[int, dict[str, str]] = get_tasks("./tasks.json")
 
     # make sure task_id exists in the json file
@@ -127,11 +129,12 @@ def update(task_id: int, new_task_description: str) -> None:
 
 
 def delete(task_id: int) -> None:
-    # TODO
-    # docstring
     """
+    Deletes (removes) an existing task (entry) from `tasks.json`.
+    Does nothing if the entry does not exist
+
+    task_id -- an int representing the task to be deleted from `tasks.json`
     """
-    # TEST
     tasks_dict: dict[int, dict[str, str]] = get_tasks("./tasks.json")
 
     # make sure key exists bfore deleting it
@@ -142,7 +145,18 @@ def delete(task_id: int) -> None:
 
 
 def list_tasks(status: str) -> None:
-    # TEST
+    """
+    Prints out all existing tasks (if `status` is NOT given), or all tasks with a specific status (if `status` is given)
+    Tasks will be printed out in the following format:
+    ID: {ID}
+    Description: DESCRIPTION
+    Status: STATUS
+    Created at: CREATED_AT
+    Updated at: UPDATED_AT
+
+
+    status -- a string representing the status of the desired task(s) to be listed
+    """
     # set the whole status to lower case just to be safe
     # since we save it as a lowercase word in the json file
     if status is not None:
@@ -160,12 +174,29 @@ def list_tasks(status: str) -> None:
 
 
 def mark(task_id: int, new_status: str) -> None:
-    # TODO
+    """
+    Changes (or marks) the status of an existing task
+    Raises KeyError exception if `task_id` isn't found in `tasks.json`
+
+    task_id -- an int representing an existing task in `tasks.json`
+    new_status -- a string representing the new status of an existing task in `tasks.json`
+    """
     tasks_dict: dict[int, dict[str, str]] = get_tasks(".tasks.json")
+
+    # make sure task_id exists in the json file
+    if task_id not in tasks_dict:
+        raise KeyError(f"ID: {task_id} not found")
 
     task_to_be_changed: dict[str, str] = tasks_dict[task_id]
 
-    pass
+    task_to_be_changed["status"] = new_status
+
+    date: str = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+
+    task_to_be_changed["updatedAt"] = f"{date}"
+
+    with open("./tasks.json", "w") as json_file:
+        json.dump(tasks_dict, json_file, indent=4)
 
 
 def main():
