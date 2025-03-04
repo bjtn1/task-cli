@@ -7,6 +7,9 @@
 A command line program to create and keep track of your tasks.
 """
 
+# TODO
+# do i wanna make this an executable with pyinstaller?
+
 import argparse
 import json
 from datetime import datetime
